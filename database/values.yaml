@@ -1,0 +1,55 @@
+# Número de réplicas (para DB siempre es 1 en un StatefulSet)
+replicaCount: 1
+
+# Imagen de MySQL
+image:
+  repository: mysql
+  tag: "8.0"
+  pullPolicy: IfNotPresent
+
+# Service para exponer MySQL dentro del cluster
+service:
+  type: ClusterIP     
+  port: 3306
+
+# Credenciales y DB inicial
+auth:
+  existingSecret: "mysql-secret" # Nombre del Secret que vas a inyectar externamente
+  rootPassword: ""               # Viene del Secret externo
+  username: ""                   # Viene del Secret externo
+  password: ""                   # Viene del Secret externo
+  database: ""                   # Viene del Secret externo
+
+serviceAccount:
+  # Generalmente un booleano para indica r si crear o no la ServiceAccount
+  create: true 
+
+# Volumen persistente (para no perder datos si se reinicia el pod)
+persistence:
+  enabled: true       # El chart genera un PVC automáticamente
+  mountPath: /var/lib/mysql
+  storageClass: gp2      # gp2 es valido para AWS EKS, crea un EBS. Cambialo si usas otro proveedor
+  accessModes:
+    - ReadWriteOnce
+  size: 10Gi
+
+# Recursos (mínimos recomendados para MySQL)
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi
+
+# Pruebas de salud
+livenessProbe:
+  tcpSocket:
+    port: 3306
+readinessProbe:
+  tcpSocket:
+    port: 3306
+
+# HPA no se usa en DB (se escala verticalmente, no horizontalmente)
+autoscaling:
+  enabled: false

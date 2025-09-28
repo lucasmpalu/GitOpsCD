@@ -1,0 +1,60 @@
+# Número de réplicas de tu app (se ignora si autoscaling.enabled = true)
+replicaCount: 2
+
+
+# Configuración de la imagen del backend
+image:
+  repository: lucasmpalu/backend   # tu repo en DockerHub/ECR/etc.
+  tag: "1.0.0"                     # versión de la imagen que construiste con el Dockerfile
+  pullPolicy: IfNotPresent         # IfNotPresent = solo baja si no está
+
+# Configuración del Service (backend expone PHP-FPM en el puerto 9000)
+service:
+  type: ClusterIP   # no expone al exterior, solo dentro del cluster
+  port: 9000        # puerto del contenedor (PHP-FPM)
+
+# Ingress (normalmente no se expone PHP-FPM directo, lo consume Nginx/Frontend)
+ingress:
+  enabled: false  
+  className: ""
+  hosts: []
+  tls: []
+
+# Requests/Limits → recursos mínimos y máximos
+resources:
+  requests:
+    cpu: 200m      
+    memory: 256Mi   
+  limits:
+    cpu: 500m       
+    memory: 512Mi   
+
+# Probes (chequeos de salud)
+# Para PHP-FPM no suele haber endpoint HTTP directo → se suele usar TCP
+livenessProbe:
+  tcpSocket:
+    port: 9000
+readinessProbe:
+  tcpSocket:
+    port: 9000
+
+# Configuración de autoscaling (HPA)
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+
+# Volúmenes (si tu app necesita configs o subir archivos)
+volumes: []
+volumeMounts: []
+
+# ServiceAccount (no necesario para backend que solo usa MySQL)
+serviceAccount:
+  create: false
+  name: ""
+
+# NodeSelector / tolerations / affinity (opcional)
+nodeSelector: {}
+tolerations: []
+affinity: {}

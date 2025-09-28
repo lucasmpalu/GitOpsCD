@@ -1,0 +1,7 @@
+apiVersion: v2 #Hoy todo es en v2, la v1 de charts ya no se usa
+name: frontend
+description: A Helm chart for Kubernetes
+type: application
+version: 1.0.0 # Version del chart. Si cambias algo en los templates, values o Chart, debes cambiar esta version
+appVersion: "1.0.0" # Versión de la aplicacion que se esta desplegando. No es obligatorio que coincida con la version del chart
+                     # Si cambia la imagen de Docker, se debe cambiar esta version

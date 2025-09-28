@@ -1,0 +1,18 @@
+Backend PHP-FPM deployed successfully!
+
+Service Details:
+- Name: {{ include "backend.fullname" . }}
+- Type: {{ .Values.service.type }}
+- Port: {{ .Values.service.port }}
+- Namespace: {{ .Release.Namespace }}
+
+The backend is running PHP-FPM and is accessible internally at:
+{{ include "backend.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}
+
+To test connectivity from within the cluster:
+  kubectl run --namespace {{ .Release.Namespace }} test-pod --rm -it --image=busybox -- /bin/sh
+  # Inside the pod, run:
+  # telnet {{ include "backend.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local {{ .Values.service.port }}
+
+To check backend status:
+  kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "backend.name" . }}"

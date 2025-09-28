@@ -1,0 +1,53 @@
+# Número de réplicas de tu app (se ignora si autoscaling.enabled = true)
+replicaCount: 3
+
+# Configuración de la imagen que va a usar el Deployment
+image:
+  repository: lucasmpalu/frontend  # nombre del repo en DockerHub/ECR/etc.
+  tag: "1.0.0"                     # versión (tag) de la imagen
+  pullPolicy: IfNotPresent         # Always = siempre baja la imagen / IfNotPresent = solo si no está
+
+
+
+# Configuración del Service (necesario para que Ingress sepa a dónde mandar el tráfico)
+service:
+  type: ClusterIP   # ClusterIP (interno), NodePort (debug), LoadBalancer (solo si no usás Ingress)
+  port: 80          # puerto donde escucha tu app
+
+# Configuración del Ingress (para exponer con dominio)
+ingress:
+  enabled: true         # true = activa Ingress
+  className: nginx      # nombre del Ingress Controller (ej: nginx, alb)
+  hosts:
+    - host: ""  # Responde al dominio del loa
+      paths:
+        - path: /                   # ruta (ej: "/", "/api", etc.)
+          pathType: Prefix          # tipo de match (Prefix es el más común)
+  tls: []                # configuración de HTTPS (si usás cert-manager o ACM)
+
+# Requests/Limits → cuánto pide mínimo y cuánto puede usar máximo
+resources:
+  requests:
+    cpu: 100m     # reserva mínima (0.1 CPU)
+    memory: 128Mi # reserva mínima (128 MB RAM)
+  limits:
+    cpu: 200m     # máximo 0.2 CPU
+    memory: 256Mi # máximo 256 MB RAM
+
+# Probes de salud (evitan servir tráfico si el pod está caído o arrancando)
+livenessProbe:
+  httpGet:
+    path: /       # chequea la raíz de la app
+    port: http
+readinessProbe:
+  httpGet:
+    path: /       # igual que liveness, pero define cuándo está listo
+    port: http
+
+# Configuración de autoscaling (Horizontal Pod Autoscaler - HPA)
+autoscaling:
+  enabled: true                 # true = habilita HPA
+  minReplicas: 2                # mínimo de pods
+  maxReplicas: 5                # máximo de pods
+  targetCPUUtilizationPercentage: 80  # escala cuando CPU > 80% promedio
+  # targetMemoryUtilizationPercentage: 80  # opcional si querés escalar por RAM
