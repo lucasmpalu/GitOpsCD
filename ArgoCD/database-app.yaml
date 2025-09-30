@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1         # versión de la API de ArgoCD
+kind: Application                        # tipo de recurso: Application
+metadata:
+  name: database-app                     # nombre único de esta app en ArgoCD
+  namespace: argocd                      # namespace donde corre ArgoCD
+spec:
+  project: default                       # proyecto de ArgoCD (por defecto "default")
+  source:                                # de dónde sacar los manifests
+    repoURL: 'https://github.com/lucasmpalu/GitOpsCD.git'   # URL del repo Git (mejor con .git)
+    targetRevision: main                 # rama que ArgoCD va a seguir
+    path: database                       # carpeta dentro del repo con los manifests de MySQL
+  destination:                           # a dónde desplegar los recursos
+    server: 'https://kubernetes.default.svc'   # API server interno del cluster
+    namespace: database                  # namespace de Kubernetes donde irá MySQL
+  syncPolicy:                            # cómo se hace la sincronización
+    automated:                           # activa modo automático (GitOps real)
+      prune: true                        # elimina lo que ya no esté en Git
+      selfHeal: true                     # corrige si alguien cambia algo a mano en el cluster

@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: frontend-app                     # nombre único en ArgoCD
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/lucasmpalu/GitOpsCD.git'
+    targetRevision: main
+    path: frontend                       # carpeta del frontend en tu repo CD
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: frontend                  # namespace destino en el cluster
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

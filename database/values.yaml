@@ -53,3 +53,6 @@ readinessProbe:
 # HPA no se usa en DB (se escala verticalmente, no horizontalmente)
 autoscaling:
   enabled: false
+
+httpRoute:
+  enabled: false
