@@ -4,7 +4,7 @@ replicaCount: 3
 # Configuración de la imagen que va a usar el Deployment
 image:
   repository: lucasmpalu/frontend  # nombre del repo en DockerHub/ECR/etc.
-  tag: "1.0.0"                     # versión (tag) de la imagen
+  tag: "b91254740444fcd489d700df4a2f40fad04b6ab7"
   pullPolicy: IfNotPresent         # Always = siempre baja la imagen / IfNotPresent = solo si no está
 
 

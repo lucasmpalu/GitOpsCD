@@ -5,7 +5,7 @@ replicaCount: 2
 # Configuración de la imagen del backend
 image:
   repository: lucasmpalu/backend   # tu repo en DockerHub/ECR/etc.
-  tag: "1.0.0"                     # versión de la imagen que construiste con el Dockerfile
+  tag: "b91254740444fcd489d700df4a2f40fad04b6ab7"
   pullPolicy: IfNotPresent         # IfNotPresent = solo baja si no está
 
 # Configuración del Service (backend expone PHP-FPM en el puerto 9000)
